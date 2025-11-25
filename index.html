@@ -1,123 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Afterschool App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-  </head>
-  <body>
-    <div id="app" class="p-6">
-      <header class="bg-blue-800 text-white py-4 px-4 mb-4">
-        <h1 class="text-2xl font-bold">Afterschool Booking Portal</h1>
-      </header>
+<head>
+  <meta charset="UTF-8">
+  <title>After School Lessons</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>After School Lessons</h1>
+  </header>
 
-      <section class="mb-4">
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search for subjects or locations"
-          class="p-2 rounded w-full"
-        />
-        <button @click="searchLessons" class="bg-green-600 text-white py-2 px-4 mt-2 rounded">
-          Search
-        </button>
-      </section>
+  <main id="lessons-container">
+    <!-- Lessons will be inserted here -->
+  </main>
 
-      <div class="grid md:grid-cols-3 gap-6">
-        <div v-for="lesson in lessons" :key="lesson._id" class="bg-white shadow rounded p-4">
-          <img :src="lesson.image" :alt="lesson.subject" />
-          <h2 class="text-xl font-bold mb-2">{{ lesson.subject }}</h2>
-          <p>Location: {{ lesson.location }}</p>
-          <p class="text-green-700">Price: Rs {{ lesson.price }}</p>
-          <p class="text-blue-800">Spaces Left: {{ lesson.space }}</p>
-          <button
-            @click="addToCart(lesson)"
-            :disabled="lesson.space <= 0"
-            class="bg-blue-600 text-white py-2 px-4 mt-2 rounded"
-          >
-            Add to Cart
-          </button>
-        </div>
-      </div>
+  <script>
+    const API_URL = 'https://afterschool-backend-b7i9.onrender.com/api/lessons';
 
-      <section class="mt-6">
-        <h3 class="text-2xl font-bold mb-2">Cart</h3>
-        <div v-if="cart.length === 0">Your cart is empty.</div>
-        <ul>
-          <li v-for="(item, index) in cart" :key="index" class="mb-2">
-            {{ item.subject }} - Rs {{ item.price }}
-          </li>
-        </ul>
-        <form @submit.prevent="checkout" class="mt-4">
-          <input type="text" v-model="name" placeholder="Your Name" required class="p-2 rounded mb-2 w-full" />
-          <input type="text" v-model="phone" placeholder="Your Phone" required class="p-2 rounded mb-2 w-full" />
-          <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded">Checkout</button>
-        </form>
-      </section>
-    </div>
+    function loadLessons() {
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+          const container = document.getElementById('lessons-container');
+          container.innerHTML = '';
+          data.forEach(lesson => {
+            const lessonCard = document.createElement('div');
+            lessonCard.className = 'lesson-card';
+            lessonCard.innerHTML = `
+              <img src="images/${lesson.image}" alt="${lesson.subject}" class="lesson-image" />
+              <div class="lesson-info">
+                <h2>${lesson.subject}</h2>
+                <p><strong>Location:</strong> ${lesson.location}</p>
+                <p><strong>Price:</strong> Rs ${lesson.price}</p>
+                <p><strong>Spaces:</strong> ${lesson.spaces}</p>
+                <button onclick="bookLesson('${lesson._id}')">Book</button>
+              </div>
+            `;
+            container.appendChild(lessonCard);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching lessons:', error);
+        });
+    }
 
-    <script>
-      new Vue({
-        el: "#app",
-        data: {
-          backend: "https://afterschool-backend-b7i9.onrender.com",
-          lessons: [],
-          cart: [],
-          name: "",
-          phone: "",
-          searchQuery: ""
-        },
-        created() {
-          this.fetchLessons();
-        },
-        methods: {
-          fetchLessons() {
-            fetch(`${this.backend}/lessons`)
-              .then(response => response.json())
-              .then(data => {
-                this.lessons = data;
-              });
-          },
-          addToCart(lesson) {
-            this.cart.push(lesson);
-          },
-          checkout() {
-            const order = {
-              name: this.name,
-              phone: this.phone,
-              items: this.cart
-            };
-            fetch(`${this.backend}/orders`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(order)
-            })
-              .then(response => response.json())
-              .then(result => {
-                if (result.success) {
-                  alert("Order placed successfully!");
-                  this.cart = [];
-                  this.name = "";
-                  this.phone = "";
-                }
-              });
-          },
-          searchLessons() {
-            if (this.searchQuery.trim() === "") {
-              this.fetchLessons();
-              return;
-            }
-            fetch(`${this.backend}/search?q=${this.searchQuery}`)
-              .then(response => response.json())
-              .then(data => {
-                this.lessons = data;
-              });
+    function bookLesson(lessonId) {
+      fetch('https://afterschool-backend-b7i9.onrender.com/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lessonId })
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('Booking successful!');
+            loadLessons();
+          } else {
+            alert('Booking failed or full!');
           }
-        }
-      });
-    </script>
-  </body>
-</html>
+        })
+        .catch(error => {
+          console.error('Error booking lesson:', error);
+        });
+    }
 
+    window.onload = loadLessons;
+  </script>
+</body>
+</html>
