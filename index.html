@@ -1,69 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>After School Lessons</title>
+  <title>Afterschool Lessons</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 </head>
 <body>
-  <header>
-    <h1>After School Lessons</h1>
-  </header>
+  <div id="app">
+    <header>
+      <h1>Afterschool Lessons</h1>
+      <div class="cart-toggle" @click="showCart = !showCart">
+        🛒 Cart ({{ cart.length }})
+      </div>
+    </header>
 
-  <main id="lessons-container">
-    <!-- Lessons will be inserted here -->
-  </main>
+    <div class="lessons">
+      <div class="lesson" v-for="(lesson, index) in lessons" :key="index">
+        <img :src="lesson.image" alt="lesson image">
+        <h2>{{ lesson.subject }}</h2>
+        <p>{{ lesson.location }}</p>
+        <p>£{{ lesson.price }}</p>
+        <p>Spaces Left: {{ lesson.space }}</p>
+        <button @click="addToCart(lesson)" :disabled="lesson.space === 0">
+          Book Now
+        </button>
+      </div>
+    </div>
 
-  <script>
-    const API_URL = 'https://afterschool-backend-b7i9.onrender.com/api/lessons';
+    <div class="cart" v-if="showCart">
+      <h2>Cart</h2>
+      <ul>
+        <li v-for="(item, index) in cart" :key="index">
+          {{ item.subject }} (x{{ item.quantity }}) - £{{ item.price * item.quantity }}
+        </li>
+      </ul>
+      <p v-if="message">{{ message }}</p>
+      <p><strong>Total:</strong> £{{ cartTotal }}</p>
+      <button @click="checkout" :disabled="cart.length === 0">Checkout</button>
+      <button @click="clearCart" :disabled="cart.length === 0">Clear Cart</button>
+    </div>
+  </div>
 
-    function loadLessons() {
-      fetch(API_URL)
-        .then(response => response.json())
-        .then(data => {
-          const container = document.getElementById('lessons-container');
-          container.innerHTML = '';
-          data.forEach(lesson => {
-            const lessonCard = document.createElement('div');
-            lessonCard.className = 'lesson-card';
-            lessonCard.innerHTML = `
-              <img src="images/${lesson.image}" alt="${lesson.subject}" class="lesson-image" />
-              <div class="lesson-info">
-                <h2>${lesson.subject}</h2>
-                <p><strong>Location:</strong> ${lesson.location}</p>
-                <p><strong>Price:</strong> Rs ${lesson.price}</p>
-                <p><strong>Spaces:</strong> ${lesson.spaces}</p>
-                <button onclick="bookLesson('${lesson._id}')">Book</button>
-              </div>
-            `;
-            container.appendChild(lessonCard);
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching lessons:', error);
-        });
-    }
-
-    function bookLesson(lessonId) {
-      fetch('https://afterschool-backend-b7i9.onrender.com/api/booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lessonId })
-      })
-        .then(response => {
-          if (response.ok) {
-            alert('Booking successful!');
-            loadLessons();
-          } else {
-            alert('Booking failed or full!');
-          }
-        })
-        .catch(error => {
-          console.error('Error booking lesson:', error);
-        });
-    }
-
-    window.onload = loadLessons;
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
