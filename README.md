@@ -1,36 +1,50 @@
-### ✅ `afterschoolapp-frontend/README.md`
+# Afterschool App – Frontend
 
-```markdown
-# Afterschool Lessons Booking App — Frontend
+This is the frontend for the Afterschool Lessons Booking Application. It was built using Vue 2 (Options API) and standard HTML, CSS, and JavaScript without the use of Vue CLI, single-file components, or advanced Vue features like props or emits.
 
-This is the frontend for the Afterschool Booking Web App built using Vue 2 (Options API, no .vue files).
+## Live Deployment
+
+- Frontend: https://afterschoolapp-frontend.onrender.com
+- Backend API: https://afterschool-backend-final.onrender.com
 
 ## Features
 
-- Browse available lessons with images
-- Add lessons to cart
-- View total and cart items
-- Book lessons (checkout)
-- Responsive and styled layout
+- View all available afterschool lessons
+- Add multiple lessons to the cart
+- Realtime total cost calculation
+- Remove items from the cart
+- Checkout and book selected lessons
+- Lesson spaces reduce upon successful booking
+
+## Project Structure
+
+frontend/
+├── index.html
+├── style.css
+├── script.js
+└── images/
+
 
 ## Technologies Used
 
 - HTML5
 - CSS3
-- JavaScript (Vue 2.6 via CDN)
+- JavaScript
+- Vue 2 (CDN via Options API)
+- Render (Frontend Hosting)
+- MongoDB Atlas (Database used via Backend)
 
-## Setup Instructions
+## How to Use
 
-1. Clone the repository.
-2. Open `index.html` in your browser.
-3. Ensure the backend is running at `http://localhost:3000` or your Render backend link.
-4. All lesson images should be in the `/images` folder.
+1. Open the frontend link above.
+2. Browse available lessons.
+3. Add lessons to your cart.
+4. Review cart items and total.
+5. Checkout to confirm booking.
 
-## Notes
+## Assignment Notes
 
-- No Vue CLI, router, or Composition API was used.
-- No Vuex or other libraries were used — only Vue CDN and Options API.
-
-## Author
-
-- Alvin Muinde
+- No Vue CLI used
+- No single-file components (.vue)
+- No Composition API, Vuex, Pinia, Mixins, Props, Emits, or Watchers
+- All frontend logic is handled in `script.js` using Vue 2.6.14
