@@ -48,9 +48,9 @@ new Vue({
             this.cart = [];
             const updated = await fetch("http://localhost:3000/lessons").then(r => r.json());
             this.lessons = updated;
-            this.message = "✅ Booking successful!";
+            this.message = " Booking successful!";
           } else {
-            this.message = "❌ Booking failed: Not enough space";
+            this.message = " Booking failed: Not enough space";
           }
         });
     }

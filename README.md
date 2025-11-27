@@ -1,6 +1,3 @@
-
----
-
 ### ✅ `afterschoolapp-frontend/README.md`
 
 ```markdown
